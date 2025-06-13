@@ -1,0 +1,41 @@
+SELECT c.email_id,c.email,
+          vars.col6 eui,
+          vars.col5 eai,
+          vars.col2 first_name,
+          vars.col3 last_name,
+          vars.col7 city,
+          vars.col8 state,
+          vars.col9 zip,
+          SUBSTRING(click_time,1,16) click_time,
+          SUBSTRING(start_time,1,16) mailing_date,
+          bodyfile mailing_name
+          FROM (
+            SELECT mail_id,email_id,email,MAX(insert_date) click_time
+            FROM clickthru_log
+            WHERE mail_id=${mail_id}
+              AND email_id NOT IN (SELECT email_id FROM unsub_log WHERE mail_id=${mail_id})
+            GROUP BY email_id,email
+          ) c
+          INNER JOIN ${table_name}_vars_value vars ON c.email_id = vars.email_id
+          INNER JOIN mailing m ON c.mail_id = m.mail_id 
+
+
+SELECT * FROM clickthru_log
+WHERE http_user_agent LIKE '%iPhone%'
+OR http_user_agent LIKE '%Android%'
+OR http_user_agent LIKE '%iPad%'
+LIMIT 200;
+
+
+
+SELECT email FROM clickthru_log
+  WHERE email NOT IN (SELECT email FROM viewed_log);
+
+
+SELECT * FROM clickthru_log
+WHERE http_user_agent LIKE '%python%'
+OR http_user_agent LIKE '%Carbon%'
+OR http_user_agent LIKE '%AHC%'
+LIMIT 200;
+
+
